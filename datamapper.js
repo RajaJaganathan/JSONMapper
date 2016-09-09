@@ -19,6 +19,7 @@ DataMapper.toObject = function(objects) {
 function Person() {
     this.name = "unknown";
     this.age = 0;
+    this.dob = null;
     this.hobbies = [];
 }
 
@@ -30,12 +31,14 @@ Person.prototype = {
     map: function(response) {
         this.name = response.name || "unknown";
         this.age = response.age;
+        this.dob = new Date(response.dob);
         this.hobbies = DataMapper.map(response.hobbies, Hobbies);
     },
     toObject: function() {
         return {
             name: this.name,
             age: this.age,
+            dob: this.dob.toString(),
             hobbies: DataMapper.toObject(this.hobbies),
         };
     }
@@ -66,6 +69,7 @@ Hobbies.prototype = {
 var persons = [{
     name: "Kumar",
     age: 0,
+    dob: "02-02-1989",
     hobbies: [{
         name: 'Cricket',
         rating: 5
@@ -73,6 +77,7 @@ var persons = [{
 }, {
     name: "Raja",
     age: 0,
+    dob: "09-02-1989",
     hobbies: [{
         name: 'Watching TV',
         rating: 4
