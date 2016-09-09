@@ -8,7 +8,7 @@ function DataMapper() {
 
 DataMapper.map = function(objects, constructor) {
     return objects.map(function(item) {
-        var instance = new constructor(); //Problem how to pass arguments;but we can safely ignore them
+        var instance = new constructor(); //Problem how to pass arguments;but can safely ignore them
         instance.map(item);
         return instance;
     });
@@ -20,71 +20,75 @@ DataMapper.toObject = function(objects) {
     });
 }
 
-function Talent() {
+function Person() {
     this.name = "unknown";
     this.age = 0;
-    this.skills = [];
+    this.hobbies = [];
 }
 
-Talent.prototype.isQualified = function() {
-    return this.skills.length > 5;
+Person.prototype = {
+    constructor: Person,
+    isSeniorCitizen: function() {
+        return this.age > 59;
+    },
+    map: function(response) {
+        this.name = response.name || "unknown";
+        this.age = response.age;
+        this.hobbies = DataMapper.map(response.hobbies, Hobbies);
+    },
+    toObject: function() {
+        return {
+            name: this.name,
+            age: this.age,
+            hobbies: DataMapper.toObject(this.hobbies),
+        };
+    }
 }
 
-Talent.prototype.map = function(response) {
-    this.name = response.name || "unknown";
-    this.age = response.age;
-    this.skills = DataMapper.map(response.skills, Skills);
-}
-
-Talent.prototype.toObject = function() {
-    return {
-        name: this.name,
-        age: this.age,
-        skills: DataMapper.toObject(this.skills),
-    };
-}
-
-function Skills() {
+function Hobbies() {
     this.name = '';
-    this.rating = 0;
+    this.interest = 1; //1 to 5 
 }
 
-Skills.prototype.map = function(response) {
-    this.name = response.name;
-    this.rating = response.rating;
-}
+Hobbies.prototype = {
+    constructor: Hobbies,
+    map: function(response) {
+        this.name = response.name;
+        this.rating = response.rating;
+    },
+    toObject: function() {
+        return {
+            name: this.name,
+            rating: this.rating
+        };
+    }
+};
 
-Skills.prototype.toObject = function() {
-    return {
-        name: this.name,
-        rating: this.rating
-    };
-}
 
 //Usage
 
-var talentlist = [{
+var persons = [{
     name: "Kumar",
     age: 0,
-    skills: [{
-        name: 'Javascript',
+    hobbies: [{
+        name: 'Cricket',
         rating: 5
     }]
 }, {
     name: "Raja",
     age: 0,
-    skills: [{
-        name: 'Node',
+    hobbies: [{
+        name: 'Watching TV',
         rating: 4
     }]
 }];
 
-var typedTalents = DataMapper.map(talentlist, Talent);
+var typedPersons = DataMapper.map(persons, Person);
 
-console.log('TypedTalents ', typedTalents);
-console.log('TypedTalents[0] ', typedTalents[0]);
-console.log('TypedTalents[0].skills ', typedTalents[0].skills);
+console.log('TypedPersons ', typedPersons);
+console.log('TypedPersons[0] ', typedPersons[0]);
+console.log('TypedPersons[0].hobbies ', typedPersons[0].hobbies);
 
-console.log('To JSON ', JSON.stringify(DataMapper.toObject(typedTalents), null, 2));
+console.log('To JSON ', JSON.stringify(DataMapper.toObject(typedPersons), null, 2));
 
 ```
