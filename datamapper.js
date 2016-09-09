@@ -25,6 +25,9 @@ function Person() {
 
 Person.prototype = {
     constructor: Person,
+    initialize: function() {
+        console.log('Like constructor');
+    },
     isSeniorCitizen: function() {
         return this.age > 59;
     },
@@ -33,6 +36,8 @@ Person.prototype = {
         this.age = response.age;
         this.dob = new Date(response.dob);
         this.hobbies = DataMapper.map(response.hobbies, Hobbies);
+
+        this.initialize();
     },
     toObject: function() {
         return {
@@ -51,9 +56,14 @@ function Hobbies() {
 
 Hobbies.prototype = {
     constructor: Hobbies,
+    initialize: function() {
+        console.log('Like constructor');
+    },
     map: function(response) {
         this.name = response.name;
         this.rating = response.rating;
+
+        this.initialize();
     },
     toObject: function() {
         return {
