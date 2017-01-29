@@ -1,18 +1,18 @@
-function DataMapper() {
+function JSONMapper() {
 
 }
 
-DataMapper.map = function(objects, constructor) {
+JSONMapper.fromJSON = function(objects, constructor) {
     return objects.map(function(item) {
         var instance = new constructor(); //Problem how to pass arguments;but can safely ignore them
-        instance.map(item);
+        instance.fromJSON(item);
         return instance;
     });
 }
 
-DataMapper.toObject = function(objects) {
+JSONMapper.toJSON = function(objects) {
     return objects.map(function(item) {
-        return item.toObject();
+        return item.toJSON();
     });
 }
 
@@ -26,25 +26,25 @@ function Person() {
 Person.prototype = {
     constructor: Person,
     initialize: function() {
-        console.log('Like constructor');
+        console.log('convention constructor called');
     },
     isSeniorCitizen: function() {
         return this.age > 59;
     },
-    map: function(response) {
+    fromJSON: function(response) {
         this.name = response.name || "unknown";
         this.age = response.age;
         this.dob = new Date(response.dob);
-        this.hobbies = DataMapper.map(response.hobbies, Hobbies);
+        this.hobbies = JSONMapper.fromJSON(response.hobbies, Hobbies);
 
         this.initialize();
     },
-    toObject: function() {
+    toJSON: function() {
         return {
             name: this.name,
             age: this.age,
             dob: this.dob.toString(),
-            hobbies: DataMapper.toObject(this.hobbies),
+            hobbies: JSONMapper.toJSON(this.hobbies),
         };
     }
 }
@@ -59,13 +59,13 @@ Hobbies.prototype = {
     initialize: function() {
         console.log('Like constructor');
     },
-    map: function(response) {
+    fromJSON: function(response) {
         this.name = response.name;
         this.rating = response.rating;
 
         this.initialize();
     },
-    toObject: function() {
+    toJSON: function() {
         return {
             name: this.name,
             rating: this.rating
@@ -94,10 +94,10 @@ var persons = [{
     }]
 }];
 
-var typedPersons = DataMapper.map(persons, Person);
+var typedPersons = JSONMapper.fromJSON(persons, Person);
 
 console.log('TypedPersons ', typedPersons);
 console.log('TypedPersons[0] ', typedPersons[0]);
 console.log('TypedPersons[0].hobbies ', typedPersons[0].hobbies);
 
-console.log('To JSON ', JSON.stringify(DataMapper.toObject(typedPersons), null, 2));
+console.log('To JSON ', JSON.stringify(JSONMapper.toJSON(typedPersons), null, 2));
